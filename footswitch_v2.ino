@@ -9,10 +9,10 @@
    Change Programm - complete
    Change Command - complete
    Settings menu - complete(without exit and voltage controll)
-   Voltage controll
-   Shut off
+   PowerControl - complete(i'm think...)
 
     View controller
+
     Send MIDI
 */
 
@@ -25,13 +25,18 @@
 #define CLICK_TIME 350
 #define DEBOUNCE_TIME 50
 
+#define POWER_PIN 7
+#define POWER_SENS A3
+#define POWER_LOW 3.60
+
 #include <avr/sleep.h>
 #include "model.h"
 #include "controller.h"
+#include "powercontrol.h"
 
-
+PowerControl power = PowerControl(POWER_PIN, POWER_SENS, POWER_LOW);
 Model model = Model();
-Controller controller = Controller(UP, DOWN, MID, &model);
+Controller controller = Controller(UP, DOWN, MID, &model, &power);
 
 void setup() {
 #ifdef TEST
@@ -54,7 +59,7 @@ ISR(PCINT0_vect) { //For port B
 }
 
 void loop() {
-  
+
   if (!controller.hasWait()) {
 #ifdef TEST
     Serial.print("\nGo to sleep");
@@ -68,11 +73,11 @@ void loop() {
     Serial.flush();
 #endif
   }
-  
+
   controller.action();
-  
+
   if (controller.hasUpdate()) {
     controller.view();
   }
-  
+
 }

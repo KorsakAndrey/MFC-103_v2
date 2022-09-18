@@ -16,11 +16,12 @@ bool Controller::changeFunction(void (Model::* function)(bool), Model& model) {
 }
 
 
-Controller::Controller(byte pinUp, byte pinDown, byte pinMid, Model* model) {
+Controller::Controller(byte pinUp, byte pinDown, byte pinMid, Model* model, PowerControl* power) {
   _up = Button(pinUp, false);
   _down = Button(pinDown, false);
   _mid = Button(pinMid, false);
   _model = model;
+  _power = power;
 }
 
 void Controller::checkButtons(byte state) {
@@ -35,7 +36,7 @@ void Controller::interupt(bool state) {
 
 void Controller::action() {
   switch (_model->getMode()) {
-    case 1: {
+    case 1: { //*****CHANGE PROGRAMM*****
         if (_mid.isDouble()) {
           _model->setMode(2);
           _viewUpdate = true;
@@ -62,7 +63,7 @@ void Controller::action() {
       }
       break;
 
-    case 2: {
+    case 2: { //*****CHANGE COMMAND*****
         if (_mid.isDouble()) {
           _model->setMode(1);
           _viewUpdate = true;
@@ -95,7 +96,7 @@ void Controller::action() {
       }
       break;
 
-    case 3: {
+    case 3: { //*****SETTINGS MENU*****
         if (_mid.isOnce()) {
           if (_menuEdit) {
             _viewUpdate = true;
